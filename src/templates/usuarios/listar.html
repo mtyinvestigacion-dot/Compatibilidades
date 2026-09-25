@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Usuarios - Sistema de Compatibilidades{% endblock %}
+{% block page_title %}Usuarios{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="bi bi-people"></i> Usuarios del sistema</span>
+        <a href="{{ url_for('main.nuevo_usuario') }}" class="btn btn-sm btn-primary">
+            <i class="bi bi-person-plus"></i> Nuevo usuario
+        </a>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0 align-middle">
+                <thead>
+                    <tr>
+                        <th>Usuario</th>
+                        <th>Rol</th>
+                        <th>Estado</th>
+                        <th>Creado</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for u in usuarios %}
+                    <tr>
+                        <td>{{ u.username }}</td>
+                        <td>
+                            <span class="badge bg-{{ 'warning' if u.rol == 'admin' else 'secondary' }}">{{ u.rol }}</span>
+                        </td>
+                        <td>
+                            <span class="badge bg-{{ 'success' if u.activo else 'danger' }}">
+                                {{ 'Activo' if u.activo else 'Inactivo' }}
+                            </span>
+                        </td>
+                        <td>{{ u.fecha_creacion.strftime('%d/%m/%Y %H:%M') if u.fecha_creacion else '-' }}</td>
+                        <td class="text-end">
+                            <a href="{{ url_for('main.reset_password', usuario_id=u.id) }}"
+                               class="btn btn-sm btn-outline-secondary" title="Restablecer contraseña">
+                                <i class="bi bi-key"></i>
+                            </a>
+                            {% if u.id != current_user.id %}
+                            <form method="post" action="{{ url_for('main.toggle_usuario', usuario_id=u.id) }}"
+                                  class="d-inline"
+                                  onsubmit="return confirm('¿{{ 'Desactivar' if u.activo else 'Activar' }} a {{ u.username }}?');">
+                                <button type="submit" class="btn btn-sm btn-outline-{{ 'danger' if u.activo else 'success' }}">
+                                    <i class="bi bi-{{ 'person-dash' if u.activo else 'person-check' }}"></i>
+                                </button>
+                            </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center text-muted py-4">Sin usuarios registrados.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

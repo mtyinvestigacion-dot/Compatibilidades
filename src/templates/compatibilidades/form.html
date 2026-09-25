@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}{% if compatibilidad %}Editar{% else %}Nueva{% endif %} Compatibilidad - Sistema de Compatibilidades{% endblock %}
+{% block page_title %}{% if compatibilidad %}Editar Compatibilidad{% else %}Nueva Compatibilidad{% endif %}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-diagram-3"></i> {% if compatibilidad %}Editar{% else %}Nueva{% endif %} compatibilidad
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    <h6 class="text-muted mb-3">Panel de reemplazo</h6>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label">Panel de reemplazo (part number)</label>
+                            <input type="text" class="form-control" name="panel_reemplazo" required
+                                   value="{{ valores.get('panel_reemplazo', '') }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Descripción del panel (opcional)</label>
+                            <input type="text" class="form-control" name="descripcion_panel"
+                                   value="{{ valores.get('descripcion_panel', '') }}">
+                        </div>
+                    </div>
+
+                    <h6 class="text-muted mb-3">TV completa compatible</h6>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Marca TV</label>
+                            <input type="text" class="form-control" name="marca_tv" list="lista-marcas" required
+                                   autocomplete="off" id="input-marca"
+                                   value="{{ valores.get('marca_tv', '') }}">
+                            <datalist id="lista-marcas"></datalist>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Modelo TV</label>
+                            <input type="text" class="form-control" name="modelo_tv" list="lista-modelos" required
+                                   autocomplete="off" id="input-modelo"
+                                   value="{{ valores.get('modelo_tv', '') }}">
+                            <datalist id="lista-modelos"></datalist>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Panel original de la TV</label>
+                            <input type="text" class="form-control" name="panel_original_tv" required
+                                   value="{{ valores.get('panel_original_tv', '') }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Pulgada (opcional)</label>
+                            <input type="text" class="form-control" name="pulgada"
+                                   value="{{ valores.get('pulgada', '') }}">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Observaciones (opcional)</label>
+                            <textarea class="form-control" name="observaciones" rows="2">{{ valores.get('observaciones', '') }}</textarea>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> Guardar
+                        </button>
+                        <a href="{{ url_for('main.index') }}" class="btn btn-outline-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    fetch("{{ url_for('main.api_marcas') }}")
+        .then(r => r.json())
+        .then(marcas => {
+            const lista = document.getElementById('lista-marcas');
+            marcas.forEach(m => {
+                const opt = document.createElement('option');
+                opt.value = m;
+                lista.appendChild(opt);
+            });
+        });
+
+    fetch("{{ url_for('main.api_modelos') }}")
+        .then(r => r.json())
+        .then(modelos => {
+            const lista = document.getElementById('lista-modelos');
+            modelos.forEach(m => {
+                const opt = document.createElement('option');
+                opt.value = m;
+                lista.appendChild(opt);
+            });
+        });
+</script>
+{% endblock %}

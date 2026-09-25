@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}Compatibilidades - Sistema de Compatibilidades{% endblock %}
+{% block page_title %}Compatibilidades Panel &harr; TV{% endblock %}
+
+{% block content %}
+<div class="card mb-3">
+    <div class="card-body">
+        <form method="get" class="row g-2 align-items-end">
+            <div class="col-md-6">
+                <label class="form-label">Buscar</label>
+                <input type="text" class="form-control" name="q" value="{{ q }}"
+                       placeholder="Panel, marca, modelo o panel original...">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Marca</label>
+                <select class="form-select" name="marca">
+                    <option value="">Todas</option>
+                    {% for m in marcas %}
+                    <option value="{{ m }}" {% if m == marca %}selected{% endif %}>{{ m }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2 d-grid">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-search"></i> Filtrar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="bi bi-diagram-3"></i> Compatibilidades registradas</span>
+        {% if current_user.rol == 'admin' %}
+        <a href="{{ url_for('main.nueva_compatibilidad') }}" class="btn btn-sm btn-primary">
+            <i class="bi bi-plus-circle"></i> Nueva compatibilidad
+        </a>
+        {% endif %}
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0 align-middle">
+                <thead>
+                    <tr>
+                        <th>Panel de reemplazo</th>
+                        <th>Marca TV</th>
+                        <th>Modelo TV</th>
+                        <th>Panel original TV</th>
+                        <th>Pulgada</th>
+                        <th>Observaciones</th>
+                        {% if current_user.rol == 'admin' %}
+                        <th></th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in compatibilidades %}
+                    <tr>
+                        <td>
+                            {{ c.panel_reemplazo }}
+                            {% if c.descripcion_panel %}<div class="text-muted small">{{ c.descripcion_panel }}</div>{% endif %}
+                        </td>
+                        <td>{{ c.marca_tv }}</td>
+                        <td>{{ c.modelo_tv }}</td>
+                        <td>{{ c.panel_original_tv }}</td>
+                        <td>{{ c.pulgada or '-' }}</td>
+                        <td>{{ c.observaciones or '-' }}</td>
+                        {% if current_user.rol == 'admin' %}
+                        <td class="text-end">
+                            <a href="{{ url_for('main.editar_compatibilidad', compat_id=c.id) }}"
+                               class="btn btn-sm btn-outline-secondary">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <form method="post" action="{{ url_for('main.eliminar_compatibilidad', compat_id=c.id) }}"
+                                  class="d-inline" onsubmit="return confirm('¿Eliminar esta compatibilidad?');">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-4">Sin compatibilidades registradas.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
