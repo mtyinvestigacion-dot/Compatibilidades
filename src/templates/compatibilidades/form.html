@@ -19,9 +19,11 @@
                                    value="{{ valores.get('panel_reemplazo', '') }}">
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">Descripción del panel (opcional)</label>
-                            <input type="text" class="form-control" name="descripcion_panel"
-                                   value="{{ valores.get('descripcion_panel', '') }}">
+                            <label class="form-label">Resultado de la prueba</label>
+                            <select class="form-select" name="resultado" required>
+                                <option value="exitosa" {% if valores.get('resultado', 'exitosa') == 'exitosa' %}selected{% endif %}>Exitosa</option>
+                                <option value="fallida" {% if valores.get('resultado') == 'fallida' %}selected{% endif %}>Fallida</option>
+                            </select>
                         </div>
                     </div>
 
@@ -50,6 +52,16 @@
                             <label class="form-label">Pulgada (opcional)</label>
                             <input type="text" class="form-control" name="pulgada"
                                    value="{{ valores.get('pulgada', '') }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Mainboard (opcional)</label>
+                            <input type="text" class="form-control" name="mainboard"
+                                   value="{{ valores.get('mainboard', '') }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">T-Con (opcional)</label>
+                            <input type="text" class="form-control" name="t_con"
+                                   value="{{ valores.get('t_con', '') }}">
                         </div>
                         <div class="col-12">
                             <label class="form-label">Observaciones (opcional)</label>

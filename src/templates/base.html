@@ -170,10 +170,16 @@
         </div>
 
         <div class="sidebar-menu">
-            <a href="{{ url_for('main.index') }}"
-               class="nav-link {% if request.path == '/' %}active{% endif %}">
-                <i class="bi bi-search text-light"></i>
-                <span>Consultar</span>
+            <a href="{{ url_for('main.listar_exitosas') }}"
+               class="nav-link {% if request.path.startswith('/compatibilidades/exitosas') %}active{% endif %}">
+                <i class="bi bi-check-circle text-success"></i>
+                <span>Compatibilidades exitosas</span>
+            </a>
+
+            <a href="{{ url_for('main.listar_fallidas') }}"
+               class="nav-link {% if request.path.startswith('/compatibilidades/fallidas') %}active{% endif %}">
+                <i class="bi bi-x-circle text-danger"></i>
+                <span>Compatibilidades fallidas</span>
             </a>
 
             {% if current_user.rol == 'admin' %}
@@ -181,6 +187,12 @@
                class="nav-link {% if request.path.startswith('/compatibilidades/nueva') %}active{% endif %}">
                 <i class="bi bi-plus-circle text-warning"></i>
                 <span>Nueva Compatibilidad</span>
+            </a>
+
+            <a href="{{ url_for('main.importar_compatibilidades') }}"
+               class="nav-link {% if request.path.startswith('/compatibilidades/importar') %}active{% endif %}">
+                <i class="bi bi-file-earmark-excel text-success"></i>
+                <span>Importar Excel</span>
             </a>
 
             <div class="menu-header">Administración</div>

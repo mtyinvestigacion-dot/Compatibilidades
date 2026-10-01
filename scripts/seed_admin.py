@@ -6,7 +6,6 @@ Uso (desde la raiz del proyecto):
 
 Es seguro correrlo varias veces: si ya existe un admin activo, no hace nada.
 """
-import getpass
 import os
 import sys
 
@@ -34,8 +33,12 @@ def main():
             print(f'Ya existe un usuario con el nombre "{username}".')
             return
 
-        password = getpass.getpass('Contraseña: ')
-        password_confirm = getpass.getpass('Confirmar contraseña: ')
+        # Se usa input() normal (no getpass) porque en varias terminales de Windows
+        # (Git Bash, VS Code, etc.) el prompt oculto de getpass se cuelga y no
+        # acepta lo que escribes. La contraseña se vera en pantalla al teclearla,
+        # aceptable porque este script solo lo corre Marco una vez, en su propia PC.
+        password = input('Contraseña (se vera en pantalla): ')
+        password_confirm = input('Confirmar contraseña: ')
         if len(password) < 6:
             print('La contraseña debe tener al menos 6 caracteres.')
             return

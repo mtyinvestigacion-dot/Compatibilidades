@@ -1,6 +1,7 @@
 {% extends "base.html" %}
-{% block title %}Compatibilidades - Sistema de Compatibilidades{% endblock %}
-{% block page_title %}Compatibilidades Panel &harr; TV{% endblock %}
+{% set es_exitosa = resultado == 'exitosa' %}
+{% block title %}Compatibilidades {{ 'exitosas' if es_exitosa else 'fallidas' }} - Sistema de Compatibilidades{% endblock %}
+{% block page_title %}Compatibilidades {{ 'exitosas' if es_exitosa else 'fallidas' }}{% endblock %}
 
 {% block content %}
 <div class="card mb-3">
@@ -31,10 +32,13 @@
 
 <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
-        <span><i class="bi bi-diagram-3"></i> Compatibilidades registradas</span>
+        <span>
+            <i class="bi {{ 'bi-check-circle text-success' if es_exitosa else 'bi-x-circle text-danger' }}"></i>
+            Compatibilidades {{ 'exitosas' if es_exitosa else 'fallidas' }}
+        </span>
         {% if current_user.rol == 'admin' %}
-        <a href="{{ url_for('main.nueva_compatibilidad') }}" class="btn btn-sm btn-primary">
-            <i class="bi bi-plus-circle"></i> Nueva compatibilidad
+        <a href="{{ url_for('main.nueva_compatibilidad', resultado=resultado) }}" class="btn btn-sm btn-primary">
+            <i class="bi bi-plus-circle"></i> Nueva {{ 'exitosa' if es_exitosa else 'fallida' }}
         </a>
         {% endif %}
     </div>
@@ -48,6 +52,8 @@
                         <th>Modelo TV</th>
                         <th>Panel original TV</th>
                         <th>Pulgada</th>
+                        <th>Mainboard</th>
+                        <th>T-Con</th>
                         <th>Observaciones</th>
                         {% if current_user.rol == 'admin' %}
                         <th></th>
@@ -57,14 +63,13 @@
                 <tbody>
                     {% for c in compatibilidades %}
                     <tr>
-                        <td>
-                            {{ c.panel_reemplazo }}
-                            {% if c.descripcion_panel %}<div class="text-muted small">{{ c.descripcion_panel }}</div>{% endif %}
-                        </td>
+                        <td>{{ c.panel_reemplazo }}</td>
                         <td>{{ c.marca_tv }}</td>
                         <td>{{ c.modelo_tv }}</td>
                         <td>{{ c.panel_original_tv }}</td>
                         <td>{{ c.pulgada or '-' }}</td>
+                        <td>{{ c.mainboard or '-' }}</td>
+                        <td>{{ c.t_con or '-' }}</td>
                         <td>{{ c.observaciones or '-' }}</td>
                         {% if current_user.rol == 'admin' %}
                         <td class="text-end">
@@ -83,7 +88,7 @@
                     </tr>
                     {% else %}
                     <tr>
-                        <td colspan="7" class="text-center text-muted py-4">Sin compatibilidades registradas.</td>
+                        <td colspan="9" class="text-center text-muted py-4">Sin compatibilidades registradas.</td>
                     </tr>
                     {% endfor %}
                 </tbody>

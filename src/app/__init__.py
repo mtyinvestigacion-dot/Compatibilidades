@@ -1,9 +1,20 @@
 from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import text
 
 from config import Config
 
 db = SQLAlchemy()
+
+
+def _migrar_columna_resultado():
+    inspector = db.inspect(db.engine)
+    columnas = [c['name'] for c in inspector.get_columns('compatibilidades')]
+    if 'resultado' not in columnas:
+        db.session.execute(
+            text("ALTER TABLE compatibilidades ADD COLUMN resultado VARCHAR(20) NOT NULL DEFAULT 'exitosa'")
+        )
+        db.session.commit()
 
 
 def create_app():
@@ -24,5 +35,6 @@ def create_app():
 
     with app.app_context():
         db.create_all()
+        _migrar_columna_resultado()
 
     return app

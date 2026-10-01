@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Importar Excel - Sistema de Compatibilidades{% endblock %}
+{% block page_title %}Importar compatibilidades desde Excel{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card mb-3">
+            <div class="card-header">
+                <i class="bi bi-file-earmark-excel"></i> Importación masiva
+            </div>
+            <div class="card-body">
+                <p>
+                    Sube un archivo <strong>.xlsx</strong> con una fila por compatibilidad. La primera fila debe
+                    ser el encabezado. Las columnas obligatorias son <strong>Panel de reemplazo</strong>,
+                    <strong>Marca TV</strong>, <strong>Modelo TV</strong> y <strong>Panel original TV</strong>.
+                    La columna <strong>Resultado</strong> es opcional: "Exitosa" o "Fallida" (si se deja vacía, se
+                    importa como Exitosa).
+                </p>
+                <p>
+                    <a href="{{ url_for('main.plantilla_importacion') }}" class="btn btn-sm btn-outline-secondary">
+                        <i class="bi bi-download"></i> Descargar plantilla
+                    </a>
+                </p>
+                <form method="post" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label class="form-label">Archivo Excel (.xlsx)</label>
+                        <input type="file" class="form-control" name="archivo" accept=".xlsx" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-upload"></i> Importar
+                    </button>
+                    <a href="{{ url_for('main.index') }}" class="btn btn-outline-secondary">Cancelar</a>
+                </form>
+            </div>
+        </div>
+
+        {% if resumen %}
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-clipboard-check"></i> Resultado de la importación
+            </div>
+            <div class="card-body">
+                <p class="mb-2"><span class="badge bg-success">{{ resumen.creadas }}</span> compatibilidad(es) creada(s).</p>
+                <p class="mb-2"><span class="badge bg-secondary">{{ resumen.duplicadas|length }}</span> omitida(s) por ya existir.</p>
+                <p class="mb-2"><span class="badge bg-danger">{{ resumen.errores|length }}</span> fila(s) con error.</p>
+
+                {% if resumen.duplicadas %}
+                <h6 class="mt-3">Duplicadas (omitidas)</h6>
+                <ul class="small text-muted">
+                    {% for linea in resumen.duplicadas %}
+                    <li>{{ linea }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+
+                {% if resumen.errores %}
+                <h6 class="mt-3 text-danger">Errores</h6>
+                <ul class="small text-danger">
+                    {% for linea in resumen.errores %}
+                    <li>{{ linea }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -11,13 +11,30 @@ Acceso mediante usuario/contraseña. No hay auto-registro: solo un admin puede d
 de alta cuentas nuevas (ver Usuarios). Toda la app exige sesion iniciada, incluso
 para solo consultar.
 
-### 2. Compatibilidades (`/`, `/compatibilidades/...`)
-Listado con busqueda (por panel, marca, modelo o panel original) y filtro por marca.
+### 2. Compatibilidades (`/compatibilidades/exitosas`, `/compatibilidades/fallidas`)
+Cada compatibilidad tiene un campo `resultado` (`exitosa`/`fallida`, constante
+`RESULTADOS` en `models.py`) que indica si la prueba de ese panel de reemplazo en
+esa TV funciono o no. Son dos listados separados (dos entradas en el sidebar,
+dos rutas), cada uno con su propia busqueda (por panel, marca, modelo o panel
+original) y filtro por marca — ambos reutilizan `_listar_compatibilidades(resultado)`
+y la misma plantilla `listar.html`. `/` redirige a `/compatibilidades/exitosas`.
 Alta/edicion/baja (`activo=False`, nunca se borra) solo para admins; los viewers
-solo consultan. El alta/edicion de marca y modelo tiene autocomplete (datalist)
-contra `/api/marcas` y `/api/modelos`.
+solo consultan. El formulario de alta/edicion incluye el selector de Resultado
+(el boton "Nueva" de cada listado precarga `?resultado=` segun en cual de las dos
+pantallas estés). El alta/edicion de marca y modelo tiene autocomplete (datalist)
+contra `/api/marcas` y `/api/modelos` (sin filtrar por resultado).
 
-### 3. Usuarios (`/usuarios/...`) — solo admin
+### 3. Importar Excel (`/compatibilidades/importar`) — solo admin
+Carga masiva de compatibilidades desde un .xlsx (primera fila = encabezado,
+columnas en el orden de `COLUMNAS_IMPORTACION` en `routes.py`, incluye `resultado`
+como ultima columna opcional — vacio o "Exitosa"/"Fallida", default exitosa). Hay
+una plantilla descargable (`/compatibilidades/importar/plantilla`). Por fila:
+valida campos obligatorios (panel, marca, modelo, panel original), salta
+duplicados exactos (misma combinación panel+marca+modelo+panel original ya activa,
+sin importar el resultado) y reporta creadas/duplicadas/errores sin tumbar el
+resto del archivo si una fila falla.
+
+### 4. Usuarios (`/usuarios/...`) — solo admin
 Alta de cuentas (usuario + contraseña + rol), activar/desactivar (nunca se borra
 un usuario) y restablecer contraseña. El primer admin se crea con
 `scripts/seed_admin.py`, no hay usuario/contraseña por defecto en el codigo.
@@ -85,6 +102,11 @@ python scripts/seed_admin.py
   pena tenerlo presente si el sistema crece.
 - Sin `db.relationship()` — los FKs (`creado_por_id`, etc.) se resuelven con consultas
   manuales cuando se necesita mostrar el username.
+- No hay Flask-Migrate/Alembic: los cambios de esquema sobre una DB ya existente se
+  resuelven a mano con `ALTER TABLE` dentro de `create_app()` (ver
+  `_migrar_columna_resultado` en `app/__init__.py`), chequeando con
+  `db.inspect(db.engine)` si la columna ya existe antes de agregarla. Si se agrega
+  otra columna a futuro sobre una tabla que ya tiene filas, seguir el mismo patron.
 
 ## Despliegue
 

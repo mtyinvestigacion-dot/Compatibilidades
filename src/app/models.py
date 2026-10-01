@@ -6,6 +6,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from app import db
 
 ROLES = ('admin', 'viewer')
+RESULTADOS = ('exitosa', 'fallida')
 
 
 class Usuario(UserMixin, db.Model):
@@ -45,15 +46,17 @@ class Compatibilidad(db.Model):
 
     # Panel de reemplazo (la parte)
     panel_reemplazo = db.Column(db.String(150), nullable=False, index=True)
-    descripcion_panel = db.Column(db.String(255))
 
     # TV completo con la que es compatible
     marca_tv = db.Column(db.String(100), nullable=False, index=True)
     modelo_tv = db.Column(db.String(150), nullable=False, index=True)
     panel_original_tv = db.Column(db.String(150), nullable=False)
     pulgada = db.Column(db.String(20))
+    mainboard = db.Column(db.String(150))
+    t_con = db.Column(db.String(150))
 
     observaciones = db.Column(db.Text)
+    resultado = db.Column(db.String(20), nullable=False, default='exitosa', index=True)
     activo = db.Column(db.Boolean, default=True)
 
     creado_por_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable=False)
@@ -65,10 +68,12 @@ class Compatibilidad(db.Model):
         return {
             'id': self.id,
             'panel_reemplazo': self.panel_reemplazo,
-            'descripcion_panel': self.descripcion_panel,
             'marca_tv': self.marca_tv,
             'modelo_tv': self.modelo_tv,
             'panel_original_tv': self.panel_original_tv,
             'pulgada': self.pulgada,
+            'mainboard': self.mainboard,
+            't_con': self.t_con,
             'observaciones': self.observaciones,
+            'resultado': self.resultado,
         }
